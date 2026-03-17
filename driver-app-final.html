@@ -5,162 +5,224 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>FleetGuard Driver</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
-  --bg:#0a0e14;--bg2:#111720;--bg3:#181f2e;
-  --border:#1e293b;--border2:#2d3f5a;
-  --text:#f0f6ff;--text2:#7a91b0;--text3:#3d5070;
-  --green:#16c972;--amber:#f0a500;--red:#ff3d3d;--blue:#3b9eff;
+  --bg:#f5f7fa;
+  --bg2:#ffffff;
+  --bg3:#f0f2f5;
+  --bg4:#e8ecf2;
+  --border:#e2e6ed;
+  --border2:#d0d6e0;
+  --text:#0f1923;
+  --text2:#4a5568;
+  --text3:#9aa5b4;
+  --blue:#1a6fff;
+  --blue-bg:#eef4ff;
+  --blue-border:#c7d9ff;
+  --green:#00b96b;
+  --green-bg:#e6f9f1;
+  --green-border:#9ee8c8;
+  --amber:#e07b00;
+  --amber-bg:#fff5e6;
+  --amber-border:#ffd699;
+  --red:#e53e3e;
+  --red-bg:#fff0f0;
+  --red-border:#ffb3b3;
+  --jakarta:'Plus Jakarta Sans',sans-serif;
+  --mono:'JetBrains Mono',monospace;
 }
-html,body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+html,body{background:var(--bg);color:var(--text);font-family:var(--jakarta);height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 .app{display:flex;flex-direction:column;min-height:100vh;max-width:480px;margin:0 auto;}
 
-/* STATUS BAR */
-.statusbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);}
-.conn-wrap{display:flex;align-items:center;gap:7px;}
-.conn-dot{width:9px;height:9px;border-radius:50%;background:var(--text3);transition:background .4s;flex-shrink:0;}
-.conn-dot.connected{background:var(--green);animation:pulse 2s infinite;}
-.conn-dot.error{background:var(--red);}
-.conn-label{font-size:12px;color:var(--text2);font-family:'Orbitron',monospace;letter-spacing:.5px;}
-.driver-id-lbl{font-size:11px;color:var(--text3);font-family:'Orbitron',monospace;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(22,201,114,.5)}50%{box-shadow:0 0 0 7px rgba(22,201,114,0)}}
+/* ── HEADER ── */
+.header{padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{width:38px;height:38px;border-radius:10px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-icon svg{width:20px;height:20px;fill:#fff;}
+.brand-name{font-size:16px;font-weight:800;color:var(--text);line-height:1;}
+.brand-sub{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-family:var(--mono);margin-top:2px;}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.live-badge{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);padding:4px 10px;border-radius:20px;}
+.live-badge.on{background:var(--green-bg);border-color:var(--green-border);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);transition:background .4s;flex-shrink:0;}
+.live-dot.on{background:var(--green);animation:pulse-g 2s infinite;}
+.live-dot.err{background:var(--red);}
+.live-txt{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:1px;}
+.live-txt.on{color:var(--green);}
+.driver-chip{font-size:10px;font-family:var(--mono);color:var(--text3);}
+@keyframes pulse-g{0%,100%{box-shadow:0 0 0 0 rgba(0,185,107,.4)}50%{box-shadow:0 0 0 6px rgba(0,185,107,0)}}
 
-/* SETTINGS PANEL */
-.settings-toggle{width:100%;padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
-.settings-toggle span{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-family:'Orbitron',monospace;}
-.settings-toggle .arrow{font-size:12px;color:var(--text3);transition:transform .2s;}
-.settings-toggle .arrow.open{transform:rotate(180deg);}
-.settings-body{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:none;gap:12px;flex-direction:column;}
-.settings-body.open{display:flex;}
-.field{display:flex;flex-direction:column;gap:5px;}
-.field label{font-size:10px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;}
-.field input,.field select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:13px;padding:9px 12px;border-radius:7px;font-family:'IBM Plex Sans',sans-serif;outline:none;width:100%;-webkit-appearance:none;}
-.field input:focus,.field select:focus{border-color:var(--blue);}
-.save-btn{padding:10px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-family:'IBM Plex Sans',sans-serif;cursor:pointer;transition:all .15s;text-align:center;}
-.save-btn:active{background:var(--border2);}
+/* ── PROFILE ── */
+.profile-bar{display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.avatar{width:48px;height:48px;border-radius:12px;background:var(--blue-bg);border:1px solid var(--blue-border);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:var(--blue);flex-shrink:0;font-family:var(--jakarta);}
+.profile-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.2;}
+.profile-id{font-size:11px;font-family:var(--mono);color:var(--text3);margin-top:3px;}
+.profile-edit{font-size:12px;color:var(--blue);cursor:pointer;border:1px solid var(--blue-border);padding:6px 14px;border-radius:8px;background:var(--blue-bg);transition:all .15s;white-space:nowrap;font-weight:600;}
+.profile-edit:active{background:var(--blue-border);}
 
-/* GAUGE */
-.gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 16px 0;width:100%;}
-canvas{display:block;max-width:100%;}
-.speed-display{display:flex;flex-direction:column;align-items:center;margin-top:-18px;}
-.speed-num{font-family:'Orbitron',monospace;font-size:80px;font-weight:900;line-height:1;letter-spacing:-3px;transition:color .3s;}
-.speed-unit{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:4px;color:var(--text2);margin-top:2px;}
-.speed-zone{font-size:13px;padding:6px 18px;border-radius:20px;margin-top:10px;font-weight:500;transition:all .3s;text-align:center;}
-.speed-zone.safe{background:rgba(22,201,114,.1);color:var(--green);border:1px solid rgba(22,201,114,.3);}
-.speed-zone.warn{background:rgba(240,165,0,.1);color:var(--amber);border:1px solid rgba(240,165,0,.3);}
-.speed-zone.danger{background:rgba(255,61,61,.12);color:var(--red);border:1px solid rgba(255,61,61,.4);animation:flash .5s infinite;}
-@keyframes flash{0%,100%{opacity:1}50%{opacity:.55}}
+/* ── SETTINGS ── */
+.settings-wrap{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;max-height:0;transition:max-height .35s ease;}
+.settings-wrap.open{max-height:560px;}
+.settings-inner{padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.field input,.field select{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);font-size:14px;padding:11px 14px;border-radius:10px;font-family:var(--jakarta);outline:none;-webkit-appearance:none;transition:border .15s;}
+.field input:focus,.field select:focus{border-color:var(--blue);background:#fff;}
+.field select option{background:#fff;}
+.save-btn{padding:13px;border-radius:10px;border:none;background:var(--blue);color:#fff;font-size:14px;font-weight:700;font-family:var(--jakarta);cursor:pointer;transition:all .15s;}
+.save-btn:active{background:#1259d4;}
 
-/* METRICS */
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:22px;width:100%;}
-.metric{background:var(--bg2);padding:15px 8px;text-align:center;}
-.metric-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;}
+/* ── GAUGE ── */
+.gauge-section{display:flex;flex-direction:column;align-items:center;padding:24px 20px 0;background:var(--bg2);width:100%;}
+canvas{display:block;width:100%;max-width:320px;}
+
+/* ── SPEED DISPLAY ── */
+.speed-display{display:flex;flex-direction:column;align-items:center;margin-top:-10px;}
+.speed-row{display:flex;align-items:flex-end;gap:6px;line-height:1;}
+.speed-num{font-family:var(--mono);font-size:88px;font-weight:700;line-height:1;letter-spacing:-4px;transition:color .25s;color:var(--text);}
+.speed-unit{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text3);margin-bottom:14px;letter-spacing:2px;}
+.speed-zone{font-size:13px;font-weight:600;padding:8px 22px;border-radius:24px;margin-top:12px;letter-spacing:.2px;transition:all .25s;}
+.speed-zone.safe{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.speed-zone.warn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.speed-zone.danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);animation:flash .5s infinite;}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px;background:var(--bg);width:100%;}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.metric-icon{font-size:16px;}
+.metric-val{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1;}
+.metric-val.blue{color:var(--blue);}
 .metric-val.green{color:var(--green);}
 .metric-val.amber{color:var(--amber);}
 .metric-val.red{color:var(--red);}
-.metric-label{font-size:10px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-top:5px;}
+.metric-val.def{color:var(--text);}
+.metric-label{font-size:9px;font-weight:600;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;}
 
-/* GPS INFO */
-.gps-row{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;background:var(--bg2);border-top:1px solid var(--border);font-size:11px;color:var(--text3);}
-.gps-chip{display:flex;gap:4px;align-items:center;}
-.gps-chip span{color:var(--text2);font-family:'Orbitron',monospace;font-size:11px;}
+/* ── GPS STRIP ── */
+.gps-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.gps-cell{background:var(--bg2);padding:10px 6px;text-align:center;}
+.gps-lbl{font-size:9px;font-weight:600;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;}
+.gps-val{font-size:11px;font-family:var(--mono);color:var(--text2);}
 
-/* SEND STATUS */
-.send-row{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.send-info{font-size:11px;color:var(--text3);}
-.send-tick{font-family:'Orbitron',monospace;font-size:11px;}
-.send-tick.ok{color:var(--green);}
-.send-tick.err{color:var(--red);}
-.send-tick.sending{color:var(--amber);}
+/* ── SEND STATUS ── */
+.send-strip{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.send-info{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.send-badge{font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:6px;font-weight:500;}
+.send-badge.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.send-badge.err{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.send-badge.sending{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.send-badge.idle{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
 
-/* LOG */
-.log-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px;}
-.log-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-family:'Orbitron',monospace;}
-.log-clear{font-size:11px;color:var(--text3);cursor:pointer;border:1px solid var(--border2);padding:4px 12px;border-radius:4px;background:transparent;font-family:'IBM Plex Sans',sans-serif;}
-.log-clear:active{background:var(--bg3);}
-.log-list{padding:0 16px 16px;max-height:180px;overflow-y:auto;}
-.log-item{display:grid;grid-template-columns:58px 68px 1fr 64px;gap:4px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
-.log-item:last-child{border-bottom:none;}
-.log-time{font-family:'Orbitron',monospace;font-size:10px;color:var(--text3);}
-.log-spd{font-family:'Orbitron',monospace;font-weight:700;font-size:12px;}
+/* ── LOG ── */
+.log-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 8px;background:var(--bg);}
+.log-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);}
+.log-clear{font-size:11px;color:var(--text3);cursor:pointer;border:1px solid var(--border);padding:4px 12px;border-radius:6px;background:var(--bg2);font-family:var(--jakarta);font-weight:500;}
+.log-clear:active{background:var(--bg4);}
+.log-list{padding:0 16px 16px;max-height:190px;overflow-y:auto;background:var(--bg);}
+.log-item{display:grid;grid-template-columns:58px 72px 1fr 60px;gap:6px;align-items:center;padding:9px 12px;margin-bottom:6px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;}
+.log-time{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.log-spd{font-family:var(--mono);font-weight:700;font-size:12px;}
 .log-spd.lo{color:var(--green);}
 .log-spd.mid{color:var(--amber);}
 .log-spd.hi{color:var(--red);}
 .log-loc{font-size:10px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.log-sent{font-size:10px;font-family:'Orbitron',monospace;text-align:right;}
+.log-sent{font-size:10px;font-family:var(--mono);text-align:right;font-weight:600;}
 .log-sent.ok{color:var(--green);}
 .log-sent.fail{color:var(--red);}
-.log-empty{text-align:center;padding:20px 0;font-size:12px;color:var(--text3);}
+.log-empty{text-align:center;padding:24px 0;font-size:12px;color:var(--text3);}
 
-/* START BTN */
-.start-wrap{padding:14px 16px;background:var(--bg2);border-top:1px solid var(--border);margin-top:auto;}
-.start-btn{width:100%;padding:18px;border-radius:12px;border:none;font-family:'Orbitron',monospace;font-size:15px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .15s;}
-.start-btn.start{background:var(--green);color:#001a0c;}
-.start-btn.start:active{opacity:.85;}
-.start-btn.stop{background:rgba(255,61,61,.15);color:var(--red);border:2px solid rgba(255,61,61,.4);}
-.start-btn.stop:active{background:rgba(255,61,61,.25);}
-
-/* DEMO BANNER */
-.demo-banner{background:rgba(59,158,255,.08);border:1px solid rgba(59,158,255,.2);border-radius:8px;margin:12px 16px 0;padding:10px 14px;font-size:12px;color:var(--blue);text-align:center;line-height:1.5;}
+/* ── START BTN ── */
+.start-wrap{padding:14px 20px 32px;background:var(--bg);margin-top:auto;}
+.start-btn{width:100%;padding:20px;border-radius:16px;border:none;font-family:var(--jakarta);font-size:16px;font-weight:800;letter-spacing:.5px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.08);}
+.start-btn.start{background:var(--blue);color:#fff;box-shadow:0 6px 24px rgba(26,111,255,.3);}
+.start-btn.start:active{transform:scale(.98);box-shadow:0 2px 8px rgba(26,111,255,.2);}
+.start-btn.stop{background:var(--bg2);color:var(--red);border:2px solid var(--red-border);}
+.start-btn.stop:active{background:var(--red-bg);}
+.btn-icon{font-size:18px;}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- STATUS BAR -->
-<div class="statusbar">
-  <div class="conn-wrap">
-    <div class="conn-dot" id="conn-dot"></div>
-    <span class="conn-label" id="conn-label">TIDAK AKTIF</span>
+<!-- HEADER -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 20 20"><path d="M10 1L3 5v5c0 4.5 3 8 7 9.5C14 17 17 13.5 17 10V5L10 1z"/></svg>
+    </div>
+    <div>
+      <div class="brand-name">FleetGuard</div>
+      <div class="brand-sub">Driver App</div>
+    </div>
   </div>
-  <span class="driver-id-lbl" id="driver-id-label">ID: DRV-001</span>
+  <div class="header-right">
+    <div class="live-badge" id="live-badge">
+      <div class="live-dot" id="live-dot"></div>
+      <span class="live-txt" id="live-txt">OFFLINE</span>
+    </div>
+    <span class="driver-chip" id="driver-chip">—</span>
+  </div>
 </div>
 
-<!-- SETTINGS TOGGLE -->
-<div class="settings-toggle" onclick="toggleSettings()">
-  <span>⚙ Pengaturan</span>
-  <span class="arrow" id="settings-arrow">▼</span>
+<!-- PROFILE -->
+<div class="profile-bar">
+  <div class="avatar" id="avatar">?</div>
+  <div style="flex:1;">
+    <div class="profile-name" id="profile-name">Nama Driver</div>
+    <div class="profile-id" id="profile-id">ID: — · Belum dikonfigurasi</div>
+  </div>
+  <button class="profile-edit" onclick="toggleSettings()">✏ Edit</button>
 </div>
-<div class="settings-body" id="settings-body">
-  <div class="field">
-    <label>Driver ID</label>
-    <input type="text" id="cfg-driver" value="DRV-001" maxlength="20" placeholder="Contoh: DRV-001">
+
+<!-- SETTINGS -->
+<div class="settings-wrap" id="settings-wrap">
+  <div class="settings-inner">
+    <div class="field">
+      <label>Nama Driver</label>
+      <input type="text" id="cfg-name" placeholder="Contoh: Budi Santoso" maxlength="40">
+    </div>
+    <div class="field">
+      <label>Driver ID</label>
+      <input type="text" id="cfg-driver" placeholder="Contoh: DRV-001" maxlength="20">
+    </div>
+    <div class="field">
+      <label>URL Server</label>
+      <input type="url" id="cfg-url" placeholder="https://fleetguard-xxxx.up.railway.app/v1/speed">
+    </div>
+    <div class="field">
+      <label>Interval Kirim Data</label>
+      <select id="cfg-interval">
+        <option value="3000">Setiap 3 detik</option>
+        <option value="5000" selected>Setiap 5 detik</option>
+        <option value="10000">Setiap 10 detik</option>
+        <option value="30000">Setiap 30 detik</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Batas Kecepatan</label>
+      <select id="cfg-limit">
+        <option value="60">60 km/h</option>
+        <option value="80" selected>80 km/h</option>
+        <option value="100">100 km/h</option>
+        <option value="120">120 km/h</option>
+      </select>
+    </div>
+    <button class="save-btn" onclick="saveSettings()">Simpan & Tutup</button>
   </div>
-  <div class="field">
-    <label>URL Server (isi setelah deploy)</label>
-    <input type="url" id="cfg-url" placeholder="https://fleetguard-xxxx.up.railway.app/v1/speed">
-  </div>
-  <div class="field">
-    <label>Interval Kirim Data</label>
-    <select id="cfg-interval">
-      <option value="3000">Setiap 3 detik</option>
-      <option value="5000" selected>Setiap 5 detik</option>
-      <option value="10000">Setiap 10 detik</option>
-      <option value="30000">Setiap 30 detik</option>
-    </select>
-  </div>
-  <div class="field">
-    <label>Batas Kecepatan Peringatan</label>
-    <select id="cfg-limit">
-      <option value="60">60 km/h</option>
-      <option value="80" selected>80 km/h</option>
-      <option value="100">100 km/h</option>
-      <option value="120">120 km/h</option>
-    </select>
-  </div>
-  <button class="save-btn" onclick="saveSettings()">✓ Simpan Pengaturan</button>
 </div>
 
 <!-- GAUGE -->
-<div class="gauge-wrap">
-  <canvas id="gauge" width="320" height="188"></canvas>
+<div class="gauge-section">
+  <canvas id="gauge" width="320" height="192"></canvas>
   <div class="speed-display">
-    <span class="speed-num" id="spd-num" style="color:var(--text)">0</span>
-    <span class="speed-unit">KM / H</span>
+    <div class="speed-row">
+      <span class="speed-num" id="spd-num">0</span>
+      <span class="speed-unit">km/h</span>
+    </div>
     <span class="speed-zone safe" id="spd-zone">Siap — tekan Mulai Tracking</span>
   </div>
 </div>
@@ -168,31 +230,39 @@ canvas{display:block;max-width:100%;}
 <!-- METRICS -->
 <div class="metrics">
   <div class="metric">
-    <div class="metric-val green" id="m-max">0</div>
-    <div class="metric-label">Maks km/h</div>
+    <div class="metric-icon">🔺</div>
+    <div class="metric-val red" id="m-max">0</div>
+    <div class="metric-label">Maks</div>
   </div>
   <div class="metric">
-    <div class="metric-val" id="m-avg" style="color:var(--text)">0</div>
+    <div class="metric-icon">◎</div>
+    <div class="metric-val def" id="m-avg">0</div>
     <div class="metric-label">Rata-rata</div>
   </div>
   <div class="metric">
+    <div class="metric-icon">⏱</div>
     <div class="metric-val amber" id="m-dur">0:00</div>
     <div class="metric-label">Durasi</div>
   </div>
+  <div class="metric">
+    <div class="metric-icon">📍</div>
+    <div class="metric-val blue" id="m-dist">0.0</div>
+    <div class="metric-label">Total km</div>
+  </div>
 </div>
 
-<!-- GPS INFO -->
-<div class="gps-row">
-  <div class="gps-chip">LAT <span id="g-lat">—</span></div>
-  <div class="gps-chip">LNG <span id="g-lng">—</span></div>
-  <div class="gps-chip">AKURASI <span id="g-acc">—</span></div>
-  <div class="gps-chip">ARAH <span id="g-hdg">—</span></div>
+<!-- GPS STRIP -->
+<div class="gps-strip">
+  <div class="gps-cell"><div class="gps-lbl">LAT</div><div class="gps-val" id="g-lat">—</div></div>
+  <div class="gps-cell"><div class="gps-lbl">LNG</div><div class="gps-val" id="g-lng">—</div></div>
+  <div class="gps-cell"><div class="gps-lbl">AKURASI</div><div class="gps-val" id="g-acc">—</div></div>
+  <div class="gps-cell"><div class="gps-lbl">ARAH</div><div class="gps-val" id="g-hdg">—</div></div>
 </div>
 
 <!-- SEND STATUS -->
-<div class="send-row">
+<div class="send-strip">
   <span class="send-info" id="last-send">Belum mengirim data</span>
-  <span class="send-tick" id="send-tick">—</span>
+  <span class="send-badge idle" id="send-badge">—</span>
 </div>
 
 <!-- LOG -->
@@ -201,149 +271,158 @@ canvas{display:block;max-width:100%;}
   <button class="log-clear" onclick="clearLog()">Hapus</button>
 </div>
 <div class="log-list" id="log-list">
-  <div class="log-empty" id="log-empty">Log pengiriman akan muncul di sini.</div>
+  <div class="log-empty">Log akan muncul setelah tracking dimulai.</div>
 </div>
 
 <!-- START BUTTON -->
 <div class="start-wrap">
-  <button class="start-btn start" id="start-btn" onclick="toggleTracking()">MULAI TRACKING</button>
+  <button class="start-btn start" id="start-btn" onclick="toggleTracking()">
+    <span class="btn-icon">▶</span> MULAI TRACKING
+  </button>
 </div>
 
-</div><!-- .app -->
+</div>
 
 <script>
-// ── STATE ──
-let tracking=false, watchId=null, sendTimer=null, durTimer=null;
-let maxSpd=0, totalSpd=0, spdCount=0, durSec=0;
-let currentSpd=0, currentLat=0, currentLng=0, currentAcc=0, currentHdg=null;
-let logItems=[];
-let speedLimit=80;
+let tracking=false,watchId=null,sendTimer=null,durTimer=null;
+let maxSpd=0,totalSpd=0,spdCount=0,durSec=0;
+let currentSpd=0,currentLat=0,currentLng=0,currentAcc=0,currentHdg=null;
+let prevLat=null,prevLng=null,totalDistKm=0;
+let logItems=[],speedLimit=80;
 
 // ── SETTINGS ──
-function toggleSettings(){
-  const body=document.getElementById('settings-body');
-  const arrow=document.getElementById('settings-arrow');
-  body.classList.toggle('open');
-  arrow.classList.toggle('open');
-}
+function toggleSettings(){document.getElementById('settings-wrap').classList.toggle('open');}
 function saveSettings(){
+  const name=(document.getElementById('cfg-name').value||'').trim()||'Nama Driver';
+  const id=(document.getElementById('cfg-driver').value||'').trim()||'DRV-001';
   speedLimit=parseInt(document.getElementById('cfg-limit').value)||80;
-  const dId=document.getElementById('cfg-driver').value.trim()||'DRV-001';
-  document.getElementById('driver-id-label').textContent='ID: '+dId;
+  document.getElementById('profile-name').textContent=name;
+  document.getElementById('profile-id').textContent='ID: '+id;
+  document.getElementById('driver-chip').textContent=id;
+  const ini=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('avatar').textContent=ini||'?';
   toggleSettings();
-  showSendStatus('✓ Tersimpan','ok');
+  drawGauge(currentSpd);
 }
-function loadSettings(){
-  speedLimit=parseInt(document.getElementById('cfg-limit').value)||80;
+function getDriverId(){return(document.getElementById('cfg-driver').value||'DRV-001').trim();}
+function getDriverName(){return(document.getElementById('cfg-name').value||'Driver').trim();}
+
+// ── HAVERSINE ──
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
 // ── GAUGE ──
 const gCanvas=document.getElementById('gauge');
 const gCtx=gCanvas.getContext('2d');
-
 function drawGauge(speed){
-  // Scale canvas for device pixel ratio
-  const dpr=window.devicePixelRatio||1;
-  const logW=Math.min(window.innerWidth-32,320);
+  const logW=Math.min((window.innerWidth||320)-40,320);
   gCanvas.style.width=logW+'px';
-  gCanvas.style.height=Math.round(logW*188/320)+'px';
-
-  const c=gCtx;
-  const W=gCanvas.width, H=gCanvas.height;
-  const cx=W/2, cy=Math.round(H*0.935), r=Math.round(W*0.455);
+  gCanvas.style.height=Math.round(logW*192/320)+'px';
+  const c=gCtx,W=gCanvas.width,H=gCanvas.height;
+  const cx=W/2,cy=Math.round(H*.945),r=Math.round(W*.46);
   c.clearRect(0,0,W,H);
+  const sA=Math.PI,eA=2*Math.PI,total=eA-sA,lw=Math.round(r*.1),maxG=160;
 
-  const sA=Math.PI, eA=2*Math.PI, total=eA-sA;
+  // shadow ring
+  c.beginPath();c.arc(cx,cy,r+2,sA,eA);
+  c.lineWidth=lw+6;c.strokeStyle='rgba(0,0,0,.04)';c.stroke();
 
-  // Track background
-  c.beginPath(); c.arc(cx,cy,r,sA,eA);
-  c.lineWidth=Math.round(r*0.096); c.strokeStyle='#1e293b'; c.stroke();
+  // track
+  c.beginPath();c.arc(cx,cy,r,sA,eA);
+  c.lineWidth=lw;c.strokeStyle='#e8ecf2';c.stroke();
 
-  // Zone colors
-  [{f:0,t:.5,col:'rgba(22,201,114,.3)'},{f:.5,t:.75,col:'rgba(240,165,0,.3)'},{f:.75,t:1,col:'rgba(255,61,61,.3)'}]
+  // zone bands
+  [{f:0,t:speedLimit/maxG,col:'rgba(0,185,107,.12)'},{f:speedLimit/maxG,t:(speedLimit*1.25)/maxG,col:'rgba(224,123,0,.12)'},{f:(speedLimit*1.25)/maxG,t:1,col:'rgba(229,62,62,.12)'}]
   .forEach(z=>{
-    c.beginPath(); c.arc(cx,cy,r,sA+z.f*total,sA+z.t*total);
-    c.lineWidth=Math.round(r*0.096); c.strokeStyle=z.col; c.stroke();
+    c.beginPath();c.arc(cx,cy,r,sA+z.f*total,sA+Math.min(z.t,1)*total);
+    c.lineWidth=lw;c.strokeStyle=z.col;c.stroke();
   });
 
-  // Tick marks
-  const maxG=160;
-  [0,20,40,60,80,100,120,140,160].forEach(t=>{
-    const a=sA+(t/maxG)*total;
-    const iR=r-Math.round(r*0.17), oR=r-Math.round(r*0.06);
-    c.beginPath();
-    c.moveTo(cx+Math.cos(a)*iR, cy+Math.sin(a)*iR);
-    c.lineTo(cx+Math.cos(a)*oR, cy+Math.sin(a)*oR);
-    c.lineWidth=1.5; c.strokeStyle='#2d3f5a'; c.stroke();
-    if(t%40===0){
-      const fs=Math.max(10,Math.round(r*0.075));
-      c.fillStyle='#3d5070'; c.font='bold '+fs+'px Orbitron,monospace';
-      c.textAlign='center'; c.textBaseline='middle';
-      const lx=cx+Math.cos(a)*(r-Math.round(r*0.28));
-      const ly=cy+Math.sin(a)*(r-Math.round(r*0.28));
-      c.fillText(t,lx,ly);
+  // ticks
+  for(let t=0;t<=maxG;t+=10){
+    const a=sA+(t/maxG)*total,major=t%40===0,minor=t%20===0;
+    if(!minor&&!major)continue;
+    const iR=r-(major?lw*1.9:lw*1.4),oR=r-lw*.7;
+    c.beginPath();c.moveTo(cx+Math.cos(a)*iR,cy+Math.sin(a)*iR);
+    c.lineTo(cx+Math.cos(a)*oR,cy+Math.sin(a)*oR);
+    c.lineWidth=major?2:1;c.strokeStyle=major?'#c5cdd8':'#dde2ea';c.stroke();
+    if(major){
+      const fs=Math.max(9,Math.round(r*.072));
+      c.fillStyle='#9aa5b4';c.font='600 '+fs+'px JetBrains Mono,monospace';
+      c.textAlign='center';c.textBaseline='middle';
+      c.fillText(t,cx+Math.cos(a)*(r-lw*2.8),cy+Math.sin(a)*(r-lw*2.8));
     }
-  });
+  }
 
-  // Speed limit marker
+  // speed limit marker
   const limA=sA+(speedLimit/maxG)*total;
+  c.beginPath();c.moveTo(cx+Math.cos(limA)*(r-lw*2.2),cy+Math.sin(limA)*(r-lw*2.2));
+  c.lineTo(cx+Math.cos(limA)*(r+lw*.2),cy+Math.sin(limA)*(r+lw*.2));
+  c.lineWidth=2.5;c.strokeStyle='rgba(229,62,62,.7)';c.stroke();
+
+  // fill arc
+  if(speed>0){
+    const fr=Math.min(speed/maxG,1),fa=sA+fr*total;
+    const col=speed>=speedLimit*1.25?'#e53e3e':speed>=speedLimit?'#e07b00':'#1a6fff';
+    c.beginPath();c.arc(cx,cy,r,sA,fa);
+    c.lineWidth=lw*2;
+    c.strokeStyle=speed>=speedLimit*1.25?'rgba(229,62,62,.08)':speed>=speedLimit?'rgba(224,123,0,.08)':'rgba(26,111,255,.08)';
+    c.stroke();
+    c.beginPath();c.arc(cx,cy,r,sA,fa);
+    c.lineWidth=lw;c.strokeStyle=col;c.lineCap='round';c.stroke();
+  }
+
+  // inner circle line
+  c.beginPath();c.arc(cx,cy,r-lw*2.8,sA,eA);
+  c.lineWidth=.5;c.strokeStyle='#e2e6ed';c.stroke();
+
+  // needle
+  const fr2=Math.min(speed/maxG,1),fa2=sA+fr2*total;
+  const nLen=r-lw*1.5,nW=Math.round(r*.065);
   c.beginPath();
-  c.moveTo(cx+Math.cos(limA)*(r-Math.round(r*0.17)), cy+Math.sin(limA)*(r-Math.round(r*0.17)));
-  c.lineTo(cx+Math.cos(limA)*(r+Math.round(r*0.06)), cy+Math.sin(limA)*(r+Math.round(r*0.06)));
-  c.lineWidth=3; c.strokeStyle='#ff3d3d'; c.stroke();
-
-  // Fill arc
-  const fr=Math.min(speed/maxG,1), fa=sA+fr*total;
-  const col=speed>=speedLimit*1.25?'#ff3d3d':speed>=speedLimit?'#f0a500':'#16c972';
-  c.beginPath(); c.arc(cx,cy,r,sA,fa);
-  c.lineWidth=Math.round(r*0.096); c.strokeStyle=col; c.lineCap='round'; c.stroke();
-
-  // Needle
-  const nLen=r-Math.round(r*0.13);
-  c.beginPath();
-  c.moveTo(cx+Math.cos(fa+Math.PI/2)*Math.round(r*0.075), cy+Math.sin(fa+Math.PI/2)*Math.round(r*0.075));
-  c.lineTo(cx+Math.cos(fa)*nLen, cy+Math.sin(fa)*nLen);
-  c.lineTo(cx+Math.cos(fa-Math.PI/2)*Math.round(r*0.075), cy+Math.sin(fa-Math.PI/2)*Math.round(r*0.075));
-  c.closePath(); c.fillStyle='#ffffff'; c.fill();
-
-  // Center hub
-  c.beginPath(); c.arc(cx,cy,Math.round(r*0.075),0,2*Math.PI); c.fillStyle='#1e293b'; c.fill();
-  c.beginPath(); c.arc(cx,cy,Math.round(r*0.038),0,2*Math.PI); c.fillStyle='#ffffff'; c.fill();
+  c.moveTo(cx+Math.cos(fa2+Math.PI/2)*nW,cy+Math.sin(fa2+Math.PI/2)*nW);
+  c.lineTo(cx+Math.cos(fa2)*nLen,cy+Math.sin(fa2)*nLen);
+  c.lineTo(cx+Math.cos(fa2-Math.PI/2)*nW,cy+Math.sin(fa2-Math.PI/2)*nW);
+  c.lineTo(cx-Math.cos(fa2)*nW*1.5,cy-Math.sin(fa2)*nW*1.5);
+  c.closePath();
+  const ng=gCtx.createLinearGradient(cx,cy-nLen,cx,cy+nW);
+  ng.addColorStop(0,'#1a6fff');ng.addColorStop(1,'#0f1923');
+  c.fillStyle=ng;c.fill();
+  // hub
+  c.beginPath();c.arc(cx,cy,nW*2.4,0,2*Math.PI);
+  c.fillStyle='#fff';
+  c.shadowColor='rgba(0,0,0,.1)';c.shadowBlur=8;c.fill();c.shadowBlur=0;
+  c.beginPath();c.arc(cx,cy,nW*1.4,0,2*Math.PI);
+  c.fillStyle=speed>=speedLimit*1.25?'#e53e3e':speed>=speedLimit?'#e07b00':'#1a6fff';c.fill();
+  c.beginPath();c.arc(cx,cy,nW*.5,0,2*Math.PI);c.fillStyle='#fff';c.fill();
 }
 drawGauge(0);
 window.addEventListener('resize',()=>drawGauge(currentSpd));
 
-// ── ZONE DISPLAY ──
+// ── ZONE ──
 function updateZone(s){
-  const z=document.getElementById('spd-zone');
-  const n=document.getElementById('spd-num');
-  if(s>=speedLimit*1.25){
-    z.textContent='⚠ OVERSPEED — Kurangi Kecepatan!';
-    z.className='speed-zone danger'; n.style.color='#ff3d3d';
-  }else if(s>=speedLimit){
-    z.textContent='Perhatian — Mendekati Batas';
-    z.className='speed-zone warn'; n.style.color='#f0a500';
-  }else{
-    z.textContent='Kecepatan Aman';
-    z.className='speed-zone safe'; n.style.color='var(--text)';
-  }
+  const z=document.getElementById('spd-zone'),n=document.getElementById('spd-num');
+  if(s>=speedLimit*1.25){z.textContent='⚠ OVERSPEED — Kurangi Kecepatan!';z.className='speed-zone danger';n.style.color='#e53e3e';}
+  else if(s>=speedLimit){z.textContent='Perhatian — Mendekati Batas';z.className='speed-zone warn';n.style.color='#e07b00';}
+  else{z.textContent='Kecepatan Aman';z.className='speed-zone safe';n.style.color='#0f1923';}
 }
 
 // ── METRICS ──
 function updateMetrics(){
   document.getElementById('m-max').textContent=maxSpd;
   document.getElementById('m-avg').textContent=spdCount>0?Math.round(totalSpd/spdCount):0;
-  const m=Math.floor(durSec/60), s=durSec%60;
+  const m=Math.floor(durSec/60),s=durSec%60;
   document.getElementById('m-dur').textContent=m+':'+(s<10?'0':'')+s;
+  document.getElementById('m-dist').textContent=totalDistKm.toFixed(1);
 }
 
 // ── LOG ──
 function renderLog(){
   const el=document.getElementById('log-list');
-  if(logItems.length===0){
-    el.innerHTML='<div class="log-empty">Log pengiriman akan muncul di sini.</div>';
-    return;
-  }
+  if(logItems.length===0){el.innerHTML='<div class="log-empty">Log akan muncul setelah tracking dimulai.</div>';return;}
   el.innerHTML=logItems.slice(0,50).map(item=>{
     const cls=item.speed>=(speedLimit*1.25)?'hi':item.speed>=speedLimit?'mid':'lo';
     return `<div class="log-item">
@@ -356,65 +435,47 @@ function renderLog(){
 }
 function clearLog(){logItems=[];renderLog();}
 
-// ── SEND STATUS ──
-function showSendStatus(msg,cls){
-  const el=document.getElementById('send-tick');
-  el.textContent=msg; el.className='send-tick '+cls;
-}
+// ── SEND BADGE ──
+function setSendBadge(t,c){const el=document.getElementById('send-badge');el.textContent=t;el.className='send-badge '+c;}
 
-// ── SEND DATA ──
+// ── SEND ──
 async function sendData(){
   const url=(document.getElementById('cfg-url').value||'').trim();
-  const driverId=(document.getElementById('cfg-driver').value||'DRV-001').trim();
-
+  const driverId=getDriverId(),driverName=getDriverName();
+  const loc=currentLat!==0?currentLat.toFixed(5)+','+currentLng.toFixed(5):'—';
   if(!url){
-    // Mode offline: simpan lokal saja
-    const ts=new Date().toLocaleTimeString('id-ID');
-    const loc=currentLat!==0?currentLat.toFixed(5)+','+currentLng.toFixed(5):'—';
-    logItems.unshift({ts,speed:currentSpd,loc,sent:false});
-    if(logItems.length>100) logItems.pop();
+    logItems.unshift({ts:new Date().toLocaleTimeString('id-ID'),speed:currentSpd,loc,sent:false});
+    if(logItems.length>100)logItems.pop();
     renderLog();
     document.getElementById('last-send').textContent='Mode offline — URL server belum diisi';
-    showSendStatus('— OFFLINE','');
-    return;
+    setSendBadge('OFFLINE','idle');return;
   }
-
   const payload={
-    driver_id:driverId,
-    speed_kmh:currentSpd,
-    latitude:currentLat,
-    longitude:currentLng,
+    driver_id:driverId,driver_name:driverName,
+    speed_kmh:currentSpd,latitude:currentLat,longitude:currentLng,
     accuracy_m:Math.round(currentAcc||0),
     heading_deg:currentHdg!=null?Math.round(currentHdg):null,
     timestamp:new Date().toISOString(),
     session_max_kmh:maxSpd,
     session_avg_kmh:spdCount>0?Math.round(totalSpd/spdCount):0,
     session_duration_sec:durSec,
+    session_distance_km:parseFloat(totalDistKm.toFixed(2)),
     overspeed_alert:currentSpd>=speedLimit,
     speed_limit_kmh:speedLimit
   };
-
   document.getElementById('last-send').textContent='Mengirim...';
-  showSendStatus('...','sending');
-
+  setSendBadge('...','sending');
   try{
-    const res=await fetch(url,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload),
-      signal:AbortSignal.timeout(6000)
-    });
+    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(6000)});
     const ok=res.ok;
-    showSendStatus(ok?'✓ OK':'✗ ERR '+res.status, ok?'ok':'err');
+    setSendBadge(ok?'✓ OK':'✗ '+res.status,ok?'ok':'err');
     document.getElementById('last-send').textContent='Terakhir: '+new Date().toLocaleTimeString('id-ID');
-    const loc=currentLat!==0?currentLat.toFixed(5)+','+currentLng.toFixed(5):'—';
     logItems.unshift({ts:new Date().toLocaleTimeString('id-ID'),speed:currentSpd,loc,sent:ok});
-    if(logItems.length>100) logItems.pop();
+    if(logItems.length>100)logItems.pop();
     renderLog();
   }catch(e){
-    showSendStatus('✗ TIMEOUT','err');
+    setSendBadge('✗ TIMEOUT','err');
     document.getElementById('last-send').textContent='Gagal: '+e.message.slice(0,40);
-    const loc=currentLat!==0?currentLat.toFixed(5)+','+currentLng.toFixed(5):'—';
     logItems.unshift({ts:new Date().toLocaleTimeString('id-ID'),speed:currentSpd,loc,sent:false});
     renderLog();
   }
@@ -424,97 +485,72 @@ async function sendData(){
 function onPosition(pos){
   const spd=pos.coords.speed;
   currentSpd=spd!=null&&spd>=0?Math.round(spd*3.6):0;
-  currentLat=pos.coords.latitude;
-  currentLng=pos.coords.longitude;
-  currentAcc=pos.coords.accuracy||0;
-  currentHdg=pos.coords.heading;
-
+  currentLat=pos.coords.latitude;currentLng=pos.coords.longitude;
+  currentAcc=pos.coords.accuracy||0;currentHdg=pos.coords.heading;
+  if(prevLat!==null){
+    const d=haversine(prevLat,prevLng,currentLat,currentLng);
+    if(d<0.5)totalDistKm+=d;
+  }
+  prevLat=currentLat;prevLng=currentLng;
   document.getElementById('spd-num').textContent=currentSpd;
   document.getElementById('g-lat').textContent=currentLat.toFixed(5);
   document.getElementById('g-lng').textContent=currentLng.toFixed(5);
   document.getElementById('g-acc').textContent=Math.round(currentAcc)+'m';
   document.getElementById('g-hdg').textContent=currentHdg!=null?Math.round(currentHdg)+'°':'—';
-
-  drawGauge(currentSpd);
-  updateZone(currentSpd);
-
-  if(currentSpd>maxSpd) maxSpd=currentSpd;
-  totalSpd+=currentSpd; spdCount++;
+  drawGauge(currentSpd);updateZone(currentSpd);
+  if(currentSpd>maxSpd)maxSpd=currentSpd;
+  totalSpd+=currentSpd;spdCount++;
   updateMetrics();
 }
-
 function onGeoError(err){
-  const msgs={1:'Izin lokasi ditolak — aktifkan di pengaturan browser',2:'Sinyal GPS lemah',3:'Timeout GPS'};
-  document.getElementById('spd-zone').textContent=msgs[err.code]||'GPS Error: '+err.message;
+  const msgs={1:'Izin lokasi ditolak — aktifkan di pengaturan',2:'Sinyal GPS lemah',3:'Timeout GPS'};
+  document.getElementById('spd-zone').textContent=msgs[err.code]||'GPS Error';
   document.getElementById('spd-zone').className='speed-zone danger';
-  document.getElementById('conn-dot').className='conn-dot error';
-  document.getElementById('conn-label').textContent='GPS GAGAL';
+  document.getElementById('live-dot').className='live-dot err';
+  document.getElementById('live-txt').textContent='GPS ERROR';
 }
 
-// ── TRACKING TOGGLE ──
+// ── TOGGLE ──
 function toggleTracking(){
-  loadSettings();
+  speedLimit=parseInt(document.getElementById('cfg-limit').value)||80;
   if(!tracking){
-    if(!navigator.geolocation){
-      alert('Browser ini tidak mendukung GPS.\nGunakan Chrome atau Safari versi terbaru.');
-      return;
-    }
-    // Reset stats
-    tracking=true; maxSpd=0; totalSpd=0; spdCount=0; durSec=0;
-
-    document.getElementById('start-btn').textContent='⏹  STOP TRACKING';
+    if(!navigator.geolocation){alert('Browser tidak mendukung GPS.\nGunakan Chrome atau Safari terbaru.');return;}
+    tracking=true;maxSpd=0;totalSpd=0;spdCount=0;durSec=0;totalDistKm=0;prevLat=null;prevLng=null;
+    document.getElementById('start-btn').innerHTML='<span class="btn-icon">⏹</span> STOP TRACKING';
     document.getElementById('start-btn').className='start-btn stop';
-    document.getElementById('conn-dot').className='conn-dot connected';
-    document.getElementById('conn-label').textContent='TRACKING AKTIF';
-    document.getElementById('driver-id-label').textContent='ID: '+(document.getElementById('cfg-driver').value||'DRV-001');
-
-    // Mulai GPS watch
-    watchId=navigator.geolocation.watchPosition(onPosition, onGeoError,{
-      enableHighAccuracy:true,
-      maximumAge:2000,
-      timeout:15000
-    });
-
-    // Mulai kirim data ke server
+    document.getElementById('live-dot').className='live-dot on';
+    document.getElementById('live-txt').textContent='LIVE';
+    document.getElementById('live-txt').className='live-txt on';
+    document.getElementById('live-badge').className='live-badge on';
+    document.getElementById('driver-chip').textContent=getDriverId();
+    watchId=navigator.geolocation.watchPosition(onPosition,onGeoError,{enableHighAccuracy:true,maximumAge:2000,timeout:15000});
     const ivl=parseInt(document.getElementById('cfg-interval').value)||5000;
-    sendData(); // kirim langsung pertama kali
-    sendTimer=setInterval(sendData, ivl);
-
-    // Timer durasi
+    sendData();sendTimer=setInterval(sendData,ivl);
     durTimer=setInterval(()=>{durSec++;updateMetrics();},1000);
-
     document.getElementById('spd-zone').textContent='Mendeteksi GPS...';
     document.getElementById('spd-zone').className='speed-zone safe';
-
   }else{
     tracking=false;
     if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null;}
-    clearInterval(sendTimer); clearInterval(durTimer);
-    sendTimer=null; durTimer=null;
-
-    document.getElementById('start-btn').textContent='MULAI TRACKING';
+    clearInterval(sendTimer);clearInterval(durTimer);
+    document.getElementById('start-btn').innerHTML='<span class="btn-icon">▶</span> MULAI TRACKING';
     document.getElementById('start-btn').className='start-btn start';
-    document.getElementById('conn-dot').className='conn-dot';
-    document.getElementById('conn-label').textContent='SESI SELESAI';
+    document.getElementById('live-dot').className='live-dot';
+    document.getElementById('live-txt').textContent='OFFLINE';
+    document.getElementById('live-txt').className='live-txt';
+    document.getElementById('live-badge').className='live-badge';
     document.getElementById('spd-num').textContent='0';
+    document.getElementById('spd-num').style.color='var(--text)';
     document.getElementById('spd-zone').textContent='Sesi selesai';
     document.getElementById('spd-zone').className='speed-zone safe';
-    document.getElementById('spd-num').style.color='var(--text)';
-    drawGauge(0);
+    currentSpd=0;drawGauge(0);
   }
 }
 
-// Prevent screen lock saat tracking (jika browser support)
+// Wake Lock
 let wakeLock=null;
-async function requestWakeLock(){
-  if('wakeLock' in navigator){
-    try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
-  }
-}
-document.getElementById('start-btn').addEventListener('click',()=>{
-  if(!tracking) requestWakeLock();
-  else if(wakeLock){wakeLock.release();wakeLock=null;}
-});
+async function reqWake(){if('wakeLock' in navigator){try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}}}
+document.getElementById('start-btn').addEventListener('click',()=>{if(!tracking)reqWake();else if(wakeLock){wakeLock.release();wakeLock=null;}});
 </script>
 </body>
 </html>
